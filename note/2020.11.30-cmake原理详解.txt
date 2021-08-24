@@ -1,0 +1,47 @@
+学习cmake暂时需要达到的目的：
+·能够导入so+头文件，集成到项目，看得懂cmakelists.txt脚本，会写一些简单的脚本就好了。
+
+将一个程序编译成可执行程序步骤如下：
+·源文件（.h .cpp等）—>预编译—>编译—>汇编—>链接（.a .so等）—>可执行文件
+·一步到位编译：gcc main.c -o main
+预处理 -E (.i) 编译 -S (.s) 汇编-c (.o) 连接-o 
+1、预处理 ：
+gcc -E main.c -o main.i -E:仅执行编译预处理 -o:将结果输出并指定输出文件的文件名 
+2、编译为汇编代码 ：
+gcc -S main.i -o main.s -S：将C代码转换为汇编代码 
+3、汇编： 
+gcc -c main.c -o main.o -c：仅执行编译操作，不进行连接操作
+4、连接：
+gcc main.o -o main
+
+经历：
+·makefile：将以上命令打包成编译脚本，只支持linux
+·AS2.3以后支持cmake, 傻瓜式编译，cmake支持跨平台
+
+编译：
+·以前是gcc编译
+·ndk18以后clang编译
+
+build_command.txt：系统变量相关配置文件
+
+cmake的arguments参数：
+1、可修改原有参数
+2、增加参数，cmakelist.txt可以直接使用
+
+CMakeLists.txt:
+include_directories( )：批量include
+message(${PROJECT_SOURCE_DIR})：message打印，PROJECT_SOURCE_DIR是系统内置变量根目录
+ 
+使用库文件需要再cmakelists.txt进行的步骤：
+1、include_directories(${PROJECT_SOURCE_DIR}/include)，导入在include下的头文件，也就是指定头文件目录位置。
+2、add_library(staticFiled STATIC IMPORTED)，定义一个变量staticFiled，类型是静态的，作用是导入库。
+3、set_property(TARGET staticFiled PROPERTY IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/lib/libxxx.a)，给变量staticFiled指定库的路径。  
+4、target_link_libraries(xxx staticFiled)，将staticFiled链接到库。
+
+
+静态库：以.a结尾，相当于模块化，程序编译的时候就必须要有。静态库在程序链接的时候使用，链接器会将程序中使用到函数的代码从库文件中拷贝到应用程序中，也就是被统一编译到libnative-lib.so库中,使用静态库的项目只有一个libnative-lib.so库文件。一旦链接完成，在执行程序的时候就不需要静态库了。
+动态库：以.so结尾，相当于插件化，可以从网上下载以节省apk大小，编译的时候可以没有.so，但执行System.loadLibrary()必须要有.so。在程序的链接时候并不像静态库那样在拷贝使用函数的代码，而只是作些标记。然后在程序开始启动运行的时候，动态地加载所需模块；动态库是基于静态库生成的，也就是先有静态库再有动态库，所以编译的时候.a 和 .so同时存在。
+
+
+
+

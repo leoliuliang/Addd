@@ -1,0 +1,26 @@
+env->NewGlobalRef(t) 转换为全局引用
+env->DeleteGlobalRef(t); t=NULL 删除全局引用
+
+JNI几个弊端：
+1、从java环境到native code的上下文切换耗时、低效。
+2、JNI编程，如果操作不当，可能引起java虚拟机崩溃。
+3、可能引起内存泄漏。
+
+JNI中的3种引用：
+1、局部引用：自动释放内存，单线程有效。
+2、全局引用：程序员释放，多个线程有效。
+3、弱全局引用：程序员释放。
+
+Jni中局部引用也可能有必要手动释放：
+1、单个native方法中，创建大量的局部引用，可能会导致jni局部引用表溢出，此时有必要及时删除不再使用的局部引用。
+2、native方法，可能不会返回（例如，一个可能进入无限事件分发的循环方法中），此时释放局部引用是至关重要的，以防内存泄漏。
+3、native方法中可能访问一个巨大对象，局部引用指向该对象时，在方法返回前不再使用也可释放。
+
+JVM进程空间中，java heap 以外的内存空间称为jvm的native memory，进程的很多资源都存放在native内存中，例如载入的代码映像，线程的堆栈，线程的管理控制块，jvm的静态数据，全局数据等，当然也包括native code。
+
+强烈建议native函数返回值为局部引用。
+时刻记住native函数中局部引用的个数有限为16个，数量不够时调用EnsureLocalCapacity，PushLocalFrame或PopLocalFrame。
+
+全局对象必须通过NewGlobalRef创建，通过DeleteGlobalRef删除。
+
+jstring类似这种带j的都是java对象，内存由jvm管理。

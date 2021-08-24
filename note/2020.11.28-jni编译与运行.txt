@@ -1,0 +1,48 @@
+jni方法的注册：
+1、静态注册：java调用native函数时，在jni库中需要拥有对应的jni函数名。
+·要求jni函数的名字必须遵循jni规范的命名格式；
+·名字冗长，容易出错；
+·初次调用会根据函数名去搜索jni库中对应的函数，会影响执行效率；
+·需要编译所有声明了native函数的java类，每个所生成的calss文件都要用javah工具生成一个头文件；
+2、动态注册：通过提供一个函数映射表，注册给jvm，不再通过查找函数名来调用。
+·java与jni通过JNINativeMethod的结构来建立函数映射表，它在jni.h中定义的；
+·创建映射表后，调用RegisterNatives函数将映射表注册给JVM；
+·当java层调用System.loadLibrary加载jni库时，会在库中查JNI_Onload函数，可将JNI_Onload视为jni库的入口函数，需要在这里完成所有函数映射和动态注册工作，及其他一些初始化工作；
+
+JNI函数签名信息：
+由于java支持函数重载，因此仅仅根据函数名是没法找到对应的jni函数，为了解决这个问题，jni将参数类型和返回值类型作为函数的签名信息。
+
+JNI编译：
+·使用ndk-build编译生成so文件。
+·Cmake编译：跨平台编译工具，不会直接编译出对象，而是根据自定义的语言规则（CMakeLists.txt）生成对应makefile或project文件，然后再调用底层的编译。
+add_library()指定编译的库文件类型。
+target_link_libraries()链接共享库
+find_library()
+
+Abi架构：
+ABI（Application binary interface）应用程序二进制接口。不同的CPU 与指令集的每种组合都有定义的 ABI (应用程序二进制接口)，一段程序只有遵循这个接口规范才能在该 CPU 上运行，所以同样的程序代码为了兼容多个不同的CPU，需要为不同的 ABI 构建不同的库文件。当然对于CPU来说，不同的架构并不意味着一定互不兼容。
+·armeabi设备只兼容armeabi；
+·armeabi-v7a设备兼容armeabi-v7a、armeabi；
+·arm64-v8a设备兼容arm64-v8a、armeabi-v7a、armeabi；
+·X86设备兼容X86、armeabi；
+·X86_64设备兼容X86_64、X86、armeabi；
+·mips64设备兼容mips64、mips；
+·mips只兼容mips；
+
+Jni技术的实现：
+我们知道cpu只认得 “0101101” 类似这种符号， C、C++ 这些代码最终都得通过编译、汇编成二进制代码，cpu才能识别。而Java比C、C++又多了一层虚拟机，过程也复杂许多。Java代码经过编译成class文件、虚拟机装载等步骤最终在虚拟机中执行。class文件里面就是一个结构复杂的表，而最终告诉虚拟机怎么执行的就靠里面的字节码说明。
+Java虚拟机在执行的时候，可以采用解释执行和编译执行的方式执行，但最终都是转化为机器码执行。
+Java虚拟机运行时的数据区，包括方法区、虚拟机栈、堆、程序计数器、本地方法栈。
+问题来了，按我目前的理解，如果是解释执行，那么方法区中应该存的是字节码，那执行的时候，通过
+JNI 动态装载的c、c++库，放哪去？怎么执行？这个问题，搜索了许多标题写着”JNI实现原理”的文章，都是抄来抄去，并没去探究如何实现的，只是讲了java如何使用JNI。好吧，就从如何使用JNI开始。
+
+jni开发中发现没有该方法错误：UnsatisfiedLinkError:No implementation found for xxx...
+1、对应的方法有没有加上extern "C"
+2、有没有System.loadLibrary("native-lib")
+3、有没有externalNativeBuild{}
+4、apk是否已经编译进去so
+
+C语言不支持重载，C++支持重载(类似java)；
+
+C++中调用java中的代码，通过反射调用；
+
