@@ -55,7 +55,7 @@ public class ByteUtil {
      * */
     public static void writeBytes(byte[] array,String fileName){
         mkdir();
-        
+
         FileOutputStream writer = null;
         try {
             writer= new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + Constant.filePath + File.separator + fileName, true);
