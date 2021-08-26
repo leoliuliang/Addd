@@ -10,7 +10,31 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="H264Encoder"
+        android:onClick="nativeTojava"
+        android:text="native反射java层"/>
+
+    <Button
+        android:id="@+id/dynamicBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="dynamicRegister"
+        android:text="动态注册"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="录屏输出h264"
         android:onClick="H264Encoder"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="播放h264"
+        android:onClick="h264Player"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="从sps解析出宽高"
+        android:onClick="spsToWidthHeigh"/>
 
 </LinearLayout>
