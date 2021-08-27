@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.mxkj.h264mediacodecdemo.camera.CameraActivity;
 import com.mxkj.h264mediacodecdemo.h264parse.H264Parse;
 import com.mxkj.h264mediacodecdemo.mediacodec.H264EncoderActivity;
 import com.mxkj.h264mediacodecdemo.player.DecodeH264Activity;
@@ -65,5 +66,9 @@ public class MainActivity extends AppCompatActivity {
                 "out.h264").getAbsolutePath());
         String s = mediaCodec.startCodec();
         Toast.makeText(this,"宽高："+s,Toast.LENGTH_SHORT).show();
+    }
+
+    public void cameraCapture(View view) {
+        startActivity(new Intent(this, CameraActivity.class));
     }
 }

@@ -37,4 +37,9 @@
         android:text="从sps解析出宽高"
         android:onClick="spsToWidthHeigh"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Camera原始数据旋转后正常输出"
+        android:onClick="cameraCapture"/>
 </LinearLayout>

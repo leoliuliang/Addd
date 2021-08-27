@@ -12,8 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mediacodec.H264EncoderActivity"></activity>
-        <activity android:name=".player.DecodeH264Activity"></activity>
+        <activity android:name=".touping.play.ToupingPlayerActivity"></activity>
+        <activity android:name=".touping.PushActivity" />
+        <activity android:name=".mediacodec.H264EncoderActivity" />
+        <activity android:name=".player.DecodeH264Activity" />
+        <activity android:name=".camera.CameraActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
