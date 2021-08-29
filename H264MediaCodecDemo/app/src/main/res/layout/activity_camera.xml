@@ -9,9 +9,17 @@
         android:layout_height="match_parent"/>
 
     <Button
+        android:id="@+id/capture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="拍照"
         android:onClick="cameraCapture"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/capture"
+        android:text="录像输出h264"
+        android:onClick="video"/>
 
 </RelativeLayout>

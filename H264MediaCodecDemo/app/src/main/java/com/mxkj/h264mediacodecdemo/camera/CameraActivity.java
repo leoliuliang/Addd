@@ -28,4 +28,8 @@ public class CameraActivity extends AppCompatActivity {
     public void cameraCapture(View view) {
         cameraSurfaceView.startCaptrue();
     }
+
+    public void video(View view) {
+        cameraSurfaceView.startVideo();
+    }
 }

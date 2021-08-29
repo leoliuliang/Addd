@@ -13,9 +13,12 @@ import com.mxkj.h264mediacodecdemo.camera.CameraActivity;
 import com.mxkj.h264mediacodecdemo.h264parse.H264Parse;
 import com.mxkj.h264mediacodecdemo.mediacodec.H264EncoderActivity;
 import com.mxkj.h264mediacodecdemo.player.DecodeH264Activity;
+import com.mxkj.h264mediacodecdemo.touping.PushActivity;
 import com.mxkj.h264mediacodecdemo.utils.AssetsUtil;
 import com.mxkj.h264mediacodecdemo.utils.Constant;
 import com.mxkj.h264mediacodecdemo.utils.PermissionUtil;
+import com.mxkj.h264mediacodecdemo.videochat.A.AChatActivity;
+import com.mxkj.h264mediacodecdemo.videochat.B.BChatActivity;
 
 import java.io.File;
 
@@ -70,5 +73,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void cameraCapture(View view) {
         startActivity(new Intent(this, CameraActivity.class));
+    }
+
+    public void videoChatA(View view) {
+        startActivity(new Intent(this, AChatActivity.class));
+    }
+
+    public void videoChatB(View view) {
+        startActivity(new Intent(this, BChatActivity.class));
+    }
+
+    public void touping(View view) {
+        startActivity(new Intent(this, PushActivity.class));
     }
 }

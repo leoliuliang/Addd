@@ -5,16 +5,21 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
+import android.media.MediaFormat;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 
+import com.mxkj.h264mediacodecdemo.utils.ByteUtil;
 import com.mxkj.h264mediacodecdemo.utils.Constant;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * 作者：created by 刘亮 on 2021/8/27 14:28
@@ -24,15 +29,39 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
     Camera.Size previewSize;
     byte[] bytes;
     private volatile boolean isCaptrue;
+    private volatile boolean isVideo;
+    MediaCodec mediaCodec;
 
     public CameraSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         getHolder().addCallback(this);
+
     }
 
     public void startCaptrue(){
         isCaptrue = true;
     }
+    public void startVideo(){
+        isVideo = true;
+    }
+
+    private void initCodec(){
+        try {
+            mediaCodec = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC);
+            MediaFormat videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, previewSize.height, previewSize.width);
+            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
+            videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE,15);
+            videoFormat.setInteger(MediaFormat.KEY_BIT_RATE,4000_000);
+            videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL,2);
+
+            mediaCodec.configure(videoFormat,null,null,MediaCodec.CONFIGURE_FLAG_ENCODE);
+            mediaCodec.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
@@ -41,6 +70,11 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
             captrue(data);
             isCaptrue = false;
         }
+
+        if (isVideo){
+            video();
+        }
+
         mCamera.addCallbackBuffer(bytes);
     }
 
@@ -70,16 +104,52 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
         }
     }
 
-    int index;
+
+    //录像输出h264
+    private void video() {
+        // 1. 旋转90度
+        portraitData2Raw(bytes);
+        // 2. nv21转nv12(yuv420), 因为mediaCodec不支持nv21，只支持nv12.
+        byte[] temp = nv21ToNv12(this.bytes);
+
+        //3. 放入数据
+        MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+        int inputIndex = mediaCodec.dequeueInputBuffer(100000);
+        if (inputIndex >= 0){
+            ByteBuffer byteBuffer = mediaCodec.getInputBuffer(inputIndex);
+            byteBuffer.clear();
+            byteBuffer.put(temp,0,temp.length);
+            mediaCodec.queueInputBuffer(inputIndex,0,temp.length,0,0);
+        }
+
+        //4. 取出编码好得数据, ba就是编码好的h264数据
+        int outIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, 100000);
+        if (outIndex >= 0){
+            ByteBuffer byteBuffer = mediaCodec.getOutputBuffer(outIndex);
+            //remaining是取出有效数据，不包括无效的0000这种数据，size包括了所有
+            byte[] ba = new byte[byteBuffer.remaining()];
+            byteBuffer.get(ba);
+
+            ByteUtil.writeBytes(ba,"vip27.h264");
+            ByteUtil.writeContent(ba,"vip27.txt");
+
+            mediaCodec.releaseOutputBuffer(outIndex,false);
+        }
+    }
+
+
+    //拍照
     private void captrue(byte[] bytes) {
+        int index = 0;
         String fileName = "IMG_"+String.valueOf(index++)+".jpg";
         File file = new File(Constant.filePath2, fileName);
+
         if (!file.exists()){
             try {
                 file.createNewFile();
                 FileOutputStream outputStream = new FileOutputStream(file);
-                //拿到yuv原始数据
-                YuvImage yuvImage = new YuvImage(bytes, ImageFormat.NV21, previewSize.width, previewSize.height, null);
+                //拿到yuv原始数据 ，这里经过旋转后拿到的数据width就是height, 高就是宽，交换传值，不然输出的照片是花屏的
+                YuvImage yuvImage = new YuvImage(bytes, ImageFormat.NV21, previewSize.height, previewSize.width, null);
                 //图像压缩, 将NV21格式图片，以质量70压缩成JEPG，并得到jpeg数据流
                 yuvImage.compressToJpeg(new Rect(0,0,yuvImage.getWidth(),yuvImage.getHeight()),70,outputStream);
 
@@ -87,12 +157,17 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
                 e.printStackTrace();
             }
 
+        }else{
+            file.delete();
         }
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         startPreview();
+
+        initCodec();
+
     }
 
 
@@ -129,5 +204,27 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
 
+    }
+
+
+    /**
+     * 因为mediaCodec不支持nv21，只支持nv12.
+     * 摄像头数据是nv21格式，要传输的话得先转成nv12
+     * 将nv21转换为nv12
+     * */
+    byte[]  nv12;//定义为全局，要不然很容易栈溢出
+    private byte[] nv21ToNv12(byte[] nv21){
+        int size = nv21.length;
+        nv12 = new byte[size];
+        int len = size * 2/3;
+        System.arraycopy(nv21,0,nv12,0,len);
+
+        int i = len;
+        while (i < size - 1){
+            nv12[i] = nv21[i+1];
+            nv12[i+1] = nv21[i];
+            i  += 2;
+        }
+        return nv12;
     }
 }

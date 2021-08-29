@@ -42,4 +42,22 @@
         android:layout_height="wrap_content"
         android:text="Camera原始数据旋转后正常输出"
         android:onClick="cameraCapture"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="投屏"
+        android:onClick="touping"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="音视频童话A端"
+        android:onClick="videoChatA"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="音视频童话B端"
+        android:onClick="videoChatB"/>
 </LinearLayout>
