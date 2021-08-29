@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">KbitPlayer</string>
+    <string name="app_error_version">版本不受支持</string>
+</resources>
