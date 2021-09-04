@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.mxkj.h264mediacodecdemo.audio.ClipAudioActivity;
+import com.mxkj.h264mediacodecdemo.camera.Camera2Activity;
 import com.mxkj.h264mediacodecdemo.camera.CameraActivity;
 import com.mxkj.h264mediacodecdemo.h264parse.H264Parse;
 import com.mxkj.h264mediacodecdemo.mediacodec.H264EncoderActivity;
@@ -17,6 +19,7 @@ import com.mxkj.h264mediacodecdemo.touping.PushActivity;
 import com.mxkj.h264mediacodecdemo.utils.AssetsUtil;
 import com.mxkj.h264mediacodecdemo.utils.Constant;
 import com.mxkj.h264mediacodecdemo.utils.PermissionUtil;
+import com.mxkj.h264mediacodecdemo.video.VideoProcess;
 import com.mxkj.h264mediacodecdemo.videochat.A.AChatActivity;
 import com.mxkj.h264mediacodecdemo.videochat.B.BChatActivity;
 
@@ -33,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         PermissionUtil.checkPermission(this);
         new AssetsUtil(this).assetsToSdcard("out.h264");
+        new AssetsUtil(this).assetsToSdcard("input.mp4");
+        new AssetsUtil(this).assetsToSdcard("input2.mp4");
+        new AssetsUtil(this).assetsToSdcard("music.mp3");
     }
 
 
@@ -85,5 +91,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void touping(View view) {
         startActivity(new Intent(this, PushActivity.class));
+    }
+
+    public void audioClip(View view) {
+        startActivity(new Intent(this, ClipAudioActivity.class));
+    }
+
+    public void videoMix(View view) {
+        new VideoProcess(this);
+    }
+
+    public void camera2(View view) {
+        startActivity(new Intent(this, Camera2Activity.class));
     }
 }

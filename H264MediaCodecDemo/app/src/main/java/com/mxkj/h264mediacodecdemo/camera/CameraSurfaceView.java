@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 
 import com.mxkj.h264mediacodecdemo.utils.ByteUtil;
 import com.mxkj.h264mediacodecdemo.utils.Constant;
+import com.mxkj.h264mediacodecdemo.utils.YuvUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,6 +29,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
     Camera mCamera;
     Camera.Size previewSize;
     byte[] bytes;
+    byte[] nv12;
     private volatile boolean isCaptrue;
     private volatile boolean isVideo;
     MediaCodec mediaCodec;
@@ -66,13 +68,15 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (isCaptrue){
-            portraitData2Raw(bytes);
-            captrue(data);
+//            portraitData2Raw(data);
+//            YuvUtils.portraitData2Raw(data,bytes,previewSize.width,previewSize.height);
+            YuvUtils.nv21_rotate_to_90(data,nv12,previewSize.width,previewSize.height);
+            captrue(nv12);
             isCaptrue = false;
         }
 
         if (isVideo){
-            video();
+            video(data);
         }
 
         mCamera.addCallbackBuffer(bytes);
@@ -106,11 +110,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 
     //录像输出h264
-    private void video() {
+    private void video(byte[] data) {
         // 1. 旋转90度
-        portraitData2Raw(bytes);
+//        portraitData2Raw(bytes);
+        YuvUtils.nv21_rotate_to_90(data,nv12,previewSize.width,previewSize.height);
         // 2. nv21转nv12(yuv420), 因为mediaCodec不支持nv21，只支持nv12.
-        byte[] temp = nv21ToNv12(this.bytes);
+        byte[] temp = YuvUtils.nv21toNV12(nv12);
 
         //3. 放入数据
         MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
@@ -186,6 +191,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
             //android摄像头的格式是NV21, 这里需要将预览数据放入缓冲区，缓冲区大小是总像素的1.5倍
             bytes = new byte[previewSize.width * previewSize.height * 3 / 2];
+            nv12 = new byte[previewSize.width * previewSize.height * 3 / 2];
             mCamera.addCallbackBuffer(bytes);
             mCamera.setPreviewCallbackWithBuffer(this);
 
@@ -206,25 +212,4 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     }
 
-
-    /**
-     * 因为mediaCodec不支持nv21，只支持nv12.
-     * 摄像头数据是nv21格式，要传输的话得先转成nv12
-     * 将nv21转换为nv12
-     * */
-    byte[]  nv12;//定义为全局，要不然很容易栈溢出
-    private byte[] nv21ToNv12(byte[] nv21){
-        int size = nv21.length;
-        nv12 = new byte[size];
-        int len = size * 2/3;
-        System.arraycopy(nv21,0,nv12,0,len);
-
-        int i = len;
-        while (i < size - 1){
-            nv12[i] = nv21[i+1];
-            nv12[i+1] = nv21[i];
-            i  += 2;
-        }
-        return nv12;
-    }
 }

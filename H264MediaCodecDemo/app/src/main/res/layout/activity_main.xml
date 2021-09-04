@@ -60,4 +60,23 @@
         android:layout_height="wrap_content"
         android:text="音视频童话B端"
         android:onClick="videoChatB"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="音频裁切"
+        android:onClick="audioClip"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="视频合成"
+        android:onClick="videoMix"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Camera2"
+        android:onClick="camera2"/>
 </LinearLayout>
