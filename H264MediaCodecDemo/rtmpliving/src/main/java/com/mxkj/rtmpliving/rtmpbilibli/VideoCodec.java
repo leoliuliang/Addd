@@ -9,6 +9,8 @@ import android.media.projection.MediaProjection;
 import android.os.Bundle;
 import android.view.Surface;
 
+import com.mxkj.rtmpliving.task.LiveTaskManager;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -62,6 +64,7 @@ public class VideoCodec extends Thread {
                 buffer.get(outData);
                 //封装成javabean
                 RTMPPackage rtmpPackage = new RTMPPackage(outData, (bufferInfo.presentationTimeUs / 1000) - startTime);
+                rtmpPackage.setType(RTMPPackage.RTMP_PACKET_TYPE_VIDEO);
                 screenLive.addPackage(rtmpPackage);
 
                 mediaCodec.releaseOutputBuffer(index, false);
@@ -103,6 +106,6 @@ public class VideoCodec extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        start();
+        LiveTaskManager.getInstance().execute(this);
     }
 }

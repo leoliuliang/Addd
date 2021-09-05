@@ -3,6 +3,8 @@ package com.mxkj.rtmpliving.rtmpbilibli;
 import android.media.projection.MediaProjection;
 import android.util.Log;
 
+import com.mxkj.rtmpliving.task.LiveTaskManager;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -36,7 +38,7 @@ public class ScreenLive extends Thread {
     public void startLive(String url, MediaProjection mediaProjection) {
         this.url = url;
         this.mediaProjection = mediaProjection;
-        start();
+        LiveTaskManager.getInstance().execute(this);
     }
 
     @Override
@@ -48,6 +50,8 @@ public class ScreenLive extends Thread {
 
         VideoCodec videoCodec = new VideoCodec(this);
         videoCodec.startLive(mediaProjection);
+        AudioCodec audioCodec = new AudioCodec(this);
+        audioCodec.startLive();
 
         isLiving = true;
         while (isLiving) {
@@ -62,12 +66,12 @@ public class ScreenLive extends Thread {
                 Log.i("ScreenLive", "run: ----------->推送 "+ rtmpPackage.getBuffer().length);
 
                 sendData(rtmpPackage.getBuffer(), rtmpPackage.getBuffer()
-                        .length , rtmpPackage.getTms());
+                        .length , rtmpPackage.getTms(),rtmpPackage.getType());
             }
         }
     }
 
-    private native boolean sendData(byte[] data, int len, long tms);
+    private native boolean sendData(byte[] data, int len, long tms,int type);
 //
     public native boolean connect(String url);
 

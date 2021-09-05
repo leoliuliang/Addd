@@ -186,13 +186,54 @@ int sendVideo(int8_t *buf, int len, long tms) {
     return ret;
 }
 
+// 组装音频包
+RTMPPacket *createAudioPacket(int8_t *buf, const int len, const int type, const long tms,
+                              Live *live) {
+
+//   两个字节  是固定的   第一个字节：af  第二个字节：01 或者 00
+    int body_size = len + 2;
+    RTMPPacket *packet = (RTMPPacket *) malloc(sizeof(RTMPPacket));
+    RTMPPacket_Alloc(packet, body_size);
+
+    packet->m_body[0] = 0xAF;
+    if (type == 1) {
+        //  音频头
+        packet->m_body[1] = 0x00;
+    }else{
+        packet->m_body[1] = 0x01;
+    }
+    memcpy(&packet->m_body[2], buf, len);
+    packet->m_packetType = RTMP_PACKET_TYPE_AUDIO;
+    packet->m_nChannel = 0x05;
+    packet->m_nBodySize = body_size;
+    packet->m_nTimeStamp = tms;
+    packet->m_hasAbsTimestamp = 0;
+    packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
+    packet->m_nInfoField2 = live->rtmp->m_stream_id;
+    return packet;
+}
+
+int sendAudio(int8_t *buf, int len, int type, int tms) {
+//   组装音频包
+    RTMPPacket *packet = createAudioPacket(buf, len, type, tms, live);
+    int ret=sendPacket(packet);
+    return ret;
+}
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_com_mxkj_rtmpliving_rtmpbilibli_ScreenLive_sendData(JNIEnv *env, jobject thiz, jbyteArray data_,
-                                                         jint len, jlong tms) {
+                                                         jint len, jlong tms,jint type) {
     int ret;
     jbyte *data = env->GetByteArrayElements(data_, NULL);
-    ret = sendVideo(data, len, tms);
+    switch (type){
+        case 0://video
+            ret = sendVideo(data, len, tms);
+            break;
+        default://audio
+            ret =  sendAudio(data, len, type, tms);
+            break;
+    }
+
     env->ReleaseByteArrayElements(data_, data, 0);
     return ret;
 }
