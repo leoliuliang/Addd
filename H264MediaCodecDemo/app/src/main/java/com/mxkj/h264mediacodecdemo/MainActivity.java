@@ -22,6 +22,7 @@ import com.mxkj.h264mediacodecdemo.utils.PermissionUtil;
 import com.mxkj.h264mediacodecdemo.video.VideoProcess;
 import com.mxkj.h264mediacodecdemo.videochat.A.AChatActivity;
 import com.mxkj.h264mediacodecdemo.videochat.B.BChatActivity;
+import com.mxkj.rtmpliving.rtmpbilibli.LivingActivity;
 
 import java.io.File;
 
@@ -103,5 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void camera2(View view) {
         startActivity(new Intent(this, Camera2Activity.class));
+    }
+
+    public void rtmpBilibli(View view) {
+        startActivity(new Intent(this, LivingActivity.class));
     }
 }

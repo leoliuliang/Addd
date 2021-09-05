@@ -79,4 +79,10 @@
         android:layout_height="wrap_content"
         android:text="Camera2"
         android:onClick="camera2"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rtmp直播推流到bilibili"
+        android:onClick="rtmpBilibli"/>
 </LinearLayout>
