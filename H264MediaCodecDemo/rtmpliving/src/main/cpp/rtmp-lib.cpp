@@ -115,6 +115,7 @@ RTMPPacket *createVideoPackage(Live *live) {
 //关键帧 和 非关键帧的协议格式
 RTMPPacket *createVideoPackage(int8_t *buf, int len, const long tms, Live *live) {
     buf += 4;
+    len -= 4;
     RTMPPacket *packet = (RTMPPacket *) malloc(sizeof(RTMPPacket));
     //9个字节是数据前面需要加上的信息，rtmp协议规定好的
     int body_size = len + 9;
