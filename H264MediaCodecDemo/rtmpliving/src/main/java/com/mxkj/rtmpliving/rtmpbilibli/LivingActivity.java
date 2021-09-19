@@ -17,7 +17,7 @@ public class LivingActivity extends AppCompatActivity {
     private MediaProjectionManager mediaProjectionManager;
     private MediaProjection mediaProjection;
     ScreenLive screenLive;
-    String url = "rtmp://live-push.bilivideo.com/live-bvc/?streamname=live_345162489_81809986&key=03693092c85bd15a1d3fbbc227da0ad1&schedule=rtmp";
+    String url = "rtmp://47.106.114.67/live/mylive";
 
 
 

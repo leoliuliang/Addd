@@ -1,3 +1,2 @@
-include ':rtmpliving'
 include ':app'
 rootProject.name = "H264MediaCodecDemo"
