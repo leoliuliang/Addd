@@ -94,7 +94,7 @@ public class TriangleRender implements GLSurfaceView.Renderer {
         //程序在onSurfaceCreated里已经创建好，需要在这里使用程序
         GLES20.glUseProgram(mProgram);
 
-        //塞数据, 将程序mProgram 关联 到 opengl里的变脸vPosition
+        //得到gpu里顶点变量vPosition的地址
         int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         //运行顶点程序往gpu里面写
         GLES20.glEnableVertexAttribArray(mPositionHandle);
