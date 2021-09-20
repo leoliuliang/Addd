@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.opengles.filter.FBOActivity;
 import com.example.opengles.filter.FilterActivity;
+import com.example.opengles.location.LocationActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,5 +58,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void fbodemo(View view) {
         startActivity(new Intent(this, FBOActivity.class));
+    }
+
+    public void location(View view) {
+        startActivity(new Intent(this, LocationActivity.class));
     }
 }
