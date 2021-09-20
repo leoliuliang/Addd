@@ -2,10 +2,15 @@ package com.example.opengles.filter;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
+import android.os.Environment;
 
 import androidx.camera.core.Preview;
 import androidx.lifecycle.LifecycleOwner;
+
+import java.io.File;
+import java.io.IOException;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -18,8 +23,10 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
     private CameraView cameraView;
     private SurfaceTexture mCameraTexure;
     private int [] textures;
-    private ScreenFilter screenFilter;
+    private CameraFilter cameraFilter;
     float[] mtx = new float[16];
+    RecordFilter recordFilter;
+    private MediaRecorder mRecorder;
 
     public CameraRender(CameraView cameraView){
         this.cameraView = cameraView;
@@ -37,14 +44,25 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
         //监听摄像头数据的回调
         mCameraTexure.setOnFrameAvailableListener(this);
 
+        Context context = cameraView.getContext();
+        recordFilter = new RecordFilter(context);
+
+        String path = new File(Environment.getExternalStorageDirectory(),
+                "input.mp4").getAbsolutePath();
+
+        mRecorder = new MediaRecorder(cameraView.getContext(), path,
+                EGL14.eglGetCurrentContext(),
+                480, 640);
+
         //初始化滤镜类，在有数据后给ScreenFilter里的顶点、片元程序
-        screenFilter = new ScreenFilter(cameraView.getContext());
+        cameraFilter = new CameraFilter(cameraView.getContext());
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         //预览有改变，重置宽高
-        screenFilter.setSize(width,height);
+        cameraFilter.setSize(width,height);
+        recordFilter.setSize(width,height);
     }
 
     @Override
@@ -56,8 +74,14 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
         //得到摄像头矩阵
         mCameraTexure.getTransformMatrix(mtx);
 
-        screenFilter.setTransformMatrix(mtx);
-        screenFilter.onDraw(textures[0]);
+        cameraFilter.setTransformMatrix(mtx);
+
+        //id ，fbo所在的纹理（图层）
+        int id = cameraFilter.onDraw(textures[0]);
+        //加载新的顶点程序和片元程序
+        id = recordFilter.onDraw(id);
+
+        mRecorder.fireFrame(id,mCameraTexure.getTimestamp());
     }
 
     @Override
@@ -74,5 +98,16 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
         //摄像头有数据回来，执行requestRender，回调到onDrawFrame里
         cameraView.requestRender();
 
+    }
+
+    public void startRecord(float speed) {
+        try {
+            mRecorder.start(speed);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void stopRecord() {
+        mRecorder.stop();
     }
 }

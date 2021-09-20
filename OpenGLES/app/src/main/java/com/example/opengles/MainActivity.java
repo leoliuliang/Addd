@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.opengles.filter.FBOActivity;
 import com.example.opengles.filter.FilterActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,5 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void filterCamera(View view) {
         startActivity(new Intent(this, FilterActivity.class));
+    }
+
+    public void fbodemo(View view) {
+        startActivity(new Intent(this, FBOActivity.class));
     }
 }
