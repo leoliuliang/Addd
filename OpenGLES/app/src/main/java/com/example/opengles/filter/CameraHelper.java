@@ -14,12 +14,16 @@ public class CameraHelper  {
     private CameraX.LensFacing currentFacing = CameraX.LensFacing.BACK;
     private Preview.OnPreviewOutputUpdateListener listener;
 
-    public CameraHelper(LifecycleOwner lifecycleOwner,Preview.OnPreviewOutputUpdateListener listener){
+    public CameraHelper(LifecycleOwner lifecycleOwner,Preview.OnPreviewOutputUpdateListener listener,int type){
+        if (type==3){
+            currentFacing = CameraX.LensFacing.FRONT;
+        }
         this.listener = listener;
         handlerThread = new HandlerThread("Analyze-thread");
         handlerThread.start();
         CameraX.bindToLifecycle(lifecycleOwner,getPreview());
     }
+
 
     private Preview getPreview() {
         //分辨率并不是最终分辨率，CameraX会根据设备的支持情况，结合你的参数，设置一个最为接近的合适分辨率

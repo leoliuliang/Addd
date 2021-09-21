@@ -33,8 +33,8 @@ public class AbstractFilter{
     private int vPosition;
     private   int vCoord;
     private   int vTexture;
-    private int mWidth;
-    private int mHeight;
+    protected int mWidth;
+    protected int mHeight;
 
     public AbstractFilter(Context context, int vertexShaderId, int fragmentShaderId){
         vertexBuffer = ByteBuffer.allocateDirect(4 * 4 * 2).order(ByteOrder.nativeOrder()).asFloatBuffer();

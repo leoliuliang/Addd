@@ -77,4 +77,10 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("type",2);
         startActivity(intent);
     }
+
+    public void beautiful(View view) {
+        Intent intent = new Intent(this, FBOActivity.class);
+        intent.putExtra("type",3);
+        startActivity(intent);
+    }
 }

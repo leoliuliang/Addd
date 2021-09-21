@@ -9,6 +9,7 @@ import android.os.Environment;
 import androidx.camera.core.Preview;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.example.opengles.soul.BeautyFilter;
 import com.example.opengles.soul.SoulFilter;
 import com.example.opengles.soul.SplitFilter;
 
@@ -32,13 +33,14 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
     private MediaRecorder mRecorder;
     SoulFilter soulFilter;
     SplitFilter splitFilter;
+    BeautyFilter beautyFilter;
     int type;
 
     public CameraRender(CameraView cameraView, int type){
         this.cameraView = cameraView;
         LifecycleOwner lifecycleOwner = (LifecycleOwner) cameraView.getContext();
         //实列化CameraHelper就可以打开摄像头
-        cameraHelper = new CameraHelper(lifecycleOwner,this);
+        cameraHelper = new CameraHelper(lifecycleOwner,this,type);
 
         this.type = type;
     }
@@ -69,6 +71,8 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
             soulFilter = new SoulFilter(cameraView.getContext());
         }else if(type==2){
             splitFilter = new SplitFilter(cameraView.getContext());
+        }else if(type==3){
+            beautyFilter = new BeautyFilter(cameraView.getContext());
         }
     }
 
@@ -81,6 +85,8 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
             soulFilter.setSize(width,height);
         }else if (type==2){
             splitFilter.setSize(width, height);
+        }else if(type==3){
+            beautyFilter.setSize(width, height);
         }
     }
 
@@ -102,6 +108,8 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
             id = soulFilter.onDraw(id);
         }else if (type==2){
             id = splitFilter.onDraw(id);
+        }else if (type==3){
+            id = beautyFilter.onDraw(id);
         }
 
         //加载新的顶点程序和片元程序
