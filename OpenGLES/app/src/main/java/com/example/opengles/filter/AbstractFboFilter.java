@@ -6,7 +6,7 @@ import android.opengl.GLES20;
 public class AbstractFboFilter extends  AbstractFilter{
 
     public int[] frameBuffer;
-    int[] frameTextures;
+    public int[] frameTextures;
 
     public AbstractFboFilter(Context context, int vertexShaderId, int fragmentShaderId) {
         super(context, vertexShaderId, fragmentShaderId);

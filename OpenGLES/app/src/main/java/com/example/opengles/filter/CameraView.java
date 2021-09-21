@@ -18,10 +18,11 @@ public class CameraView extends GLSurfaceView {
         super(context);
     }
 
-    public CameraView(Context context, AttributeSet attrs) {
+    public CameraView(Context context, AttributeSet attrs,int type) {
         super(context, attrs);
         setEGLContextClientVersion(2);//配置opengl版本
-        cameraRender = new CameraRender(this);
+        //type : 1是灵魂出窍特效，2是分屏特效
+        cameraRender = new CameraRender(this,type);
         setRenderer(cameraRender);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 
 import com.example.opengles.R;
@@ -14,13 +15,17 @@ import com.example.opengles.widget.RecordButton;
 
 public class FBOActivity extends AppCompatActivity  implements RecordButton.OnRecordListener, RadioGroup.OnCheckedChangeListener {
 
-    private CameraView cameraView;
+    private FrameLayout frameLayout;
+    CameraView cameraView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_f_b_o);
-        cameraView = findViewById(R.id.cameraView);
+        frameLayout = findViewById(R.id.cameraView);
+        cameraView = new CameraView(this,null, getIntent().getIntExtra("type",0));
+        frameLayout.addView(cameraView);
+
         RecordButton btn_record = findViewById(R.id.btn_record);
         btn_record.setOnRecordListener(this);
 

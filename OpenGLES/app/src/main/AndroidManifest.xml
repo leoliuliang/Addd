@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenGLES">
-        <activity android:name=".location.LocationActivity"></activity>
+        <activity android:name=".soul.SoulActivity"></activity>
+        <activity android:name=".location.LocationActivity" />
         <activity android:name=".filter.FBOActivity" />
         <activity android:name=".filter.FilterActivity" />
         <activity android:name=".GLTestActivity" />

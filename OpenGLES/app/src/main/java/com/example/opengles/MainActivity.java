@@ -57,10 +57,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void fbodemo(View view) {
-        startActivity(new Intent(this, FBOActivity.class));
+        Intent intent = new Intent(this, FBOActivity.class);
+        intent.putExtra("type",0);
+        startActivity(intent);
     }
 
     public void location(View view) {
         startActivity(new Intent(this, LocationActivity.class));
+    }
+
+    public void soulBtn(View view) {
+        Intent intent = new Intent(this, FBOActivity.class);
+        intent.putExtra("type",1);
+        startActivity(intent);
+    }
+
+    public void splitScreen(View view) {
+        Intent intent = new Intent(this, FBOActivity.class);
+        intent.putExtra("type",2);
+        startActivity(intent);
     }
 }

@@ -9,6 +9,9 @@ import android.os.Environment;
 import androidx.camera.core.Preview;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.example.opengles.soul.SoulFilter;
+import com.example.opengles.soul.SplitFilter;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -27,12 +30,17 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
     float[] mtx = new float[16];
     RecordFilter recordFilter;
     private MediaRecorder mRecorder;
+    SoulFilter soulFilter;
+    SplitFilter splitFilter;
+    int type;
 
-    public CameraRender(CameraView cameraView){
+    public CameraRender(CameraView cameraView, int type){
         this.cameraView = cameraView;
         LifecycleOwner lifecycleOwner = (LifecycleOwner) cameraView.getContext();
         //实列化CameraHelper就可以打开摄像头
         cameraHelper = new CameraHelper(lifecycleOwner,this);
+
+        this.type = type;
     }
 
     @Override
@@ -56,6 +64,12 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
 
         //初始化滤镜类，在有数据后给ScreenFilter里的顶点、片元程序
         cameraFilter = new CameraFilter(cameraView.getContext());
+
+        if (type==1) {
+            soulFilter = new SoulFilter(cameraView.getContext());
+        }else if(type==2){
+            splitFilter = new SplitFilter(cameraView.getContext());
+        }
     }
 
     @Override
@@ -63,6 +77,11 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
         //预览有改变，重置宽高
         cameraFilter.setSize(width,height);
         recordFilter.setSize(width,height);
+        if (type==1){
+            soulFilter.setSize(width,height);
+        }else if (type==2){
+            splitFilter.setSize(width, height);
+        }
     }
 
     @Override
@@ -78,6 +97,13 @@ public class CameraRender implements GLSurfaceView.Renderer, Preview.OnPreviewOu
 
         //id ，fbo所在的纹理（图层）
         int id = cameraFilter.onDraw(textures[0]);
+
+        if (type==1){
+            id = soulFilter.onDraw(id);
+        }else if (type==2){
+            id = splitFilter.onDraw(id);
+        }
+
         //加载新的顶点程序和片元程序
         id = recordFilter.onDraw(id);
 
